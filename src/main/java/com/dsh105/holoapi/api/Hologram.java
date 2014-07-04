@@ -61,6 +61,7 @@ public class Hologram {
     private boolean simple = false;
     private boolean touchEnabled;
     private Visibility visibility = new VisibilityDefault();
+    private int radius;
 
     protected Hologram(int firstTagId, String saveId, String worldName, double x, double y, double z, String... lines) {
         this(worldName, x, y, z);
@@ -293,6 +294,24 @@ public class Hologram {
 
     public void setTouchEnabled(boolean touchEnabled) {
         this.touchEnabled = touchEnabled;
+    }
+
+    /**
+     * Gets this {@link Hologram}' visible radius.
+     * 
+     * @return visible radius
+     */
+    public int getRadius() {
+        return radius;
+    }
+
+    /**
+     * Sets this {@link Hologram}'s visible radius.
+     * 
+     * @param radius radius to set
+     */
+    public void setRadius(int radius) {
+        this.radius = radius;
     }
 
     protected void setImageTagMap(HashMap<TagSize, String> map) {
@@ -614,6 +633,21 @@ public class Hologram {
         }
 
         return ids;
+    }
+
+    /**
+     * Checks if a {@link Player} is within this {@link Hologram}'s radius. 
+     * 
+     * @param observer player to check
+     * @return true if the radius is equals or smaller than 0, or if the observer's distance from this Hologram's 
+     * location is within this Hologram's radius.
+     */
+    public boolean isWithinRadius(Player observer) {
+        Vector holoLoc = getLocationFor(observer);
+        if(holoLoc == null) {
+            holoLoc = new Vector(getDefaultX(), getDefaultY(), getDefaultZ());
+        }
+        return radius <= 0 || observer.getLocation().toVector().distance(holoLoc) <= radius;
     }
 
     public void show(Player observer, boolean obeyVisibility) {

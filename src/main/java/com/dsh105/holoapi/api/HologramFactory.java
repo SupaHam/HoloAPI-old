@@ -62,6 +62,7 @@ public class HologramFactory {
     protected HashMap<TagSize, String> imageIdMap = new HashMap<TagSize, String>();
     private int tagId;
     private boolean withTagId;
+    private int radius;
 
     /**
      * Constructs a HologramFactory
@@ -211,6 +212,17 @@ public class HologramFactory {
         return this;
     }
 
+    /**
+     * Sets the {@link Hologram}'s radius.
+     *
+     * @param radius radius to set, 0 for default
+     * @return This object
+     */
+    public HologramFactory withRadius(int radius) {
+        this.radius = radius;
+        return this;
+    }
+
     protected HologramFactory withFirstTagId(int tagId) {
         this.tagId = tagId;
         this.withTagId = true;
@@ -240,7 +252,9 @@ public class HologramFactory {
 
         if (Bukkit.getWorld(this.worldName) == null) {
             //HoloAPI.getManager().clearFromFile(this.saveId);
-            HoloAPICore.LOGGER.log(Level.SEVERE, "Could not find valid world (" + this.worldName + ") for Hologram of ID " + this.saveId + "!");
+            HoloAPICore.LOGGER.log(Level.SEVERE,
+                                   "Could not find valid world (" + this.worldName + ") for Hologram of ID " +
+                                   this.saveId + "!");
             WorldListener.store(this.saveId, this.worldName);
             return null;
         }
@@ -254,6 +268,7 @@ public class HologramFactory {
         hologram.setImageTagMap(this.imageIdMap);
         hologram.setSimplicity(this.simple);
         hologram.setVisibility(this.visibility);
+        hologram.setRadius(this.radius);
         /*if (!hologram.isSimple()) {
             for (Hologram h : HoloAPI.getManager().getAllHolograms().keySet()) {
                 if (!h.isSimple()) {

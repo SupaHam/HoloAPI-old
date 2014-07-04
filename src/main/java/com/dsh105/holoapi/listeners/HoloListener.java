@@ -22,17 +22,22 @@ import com.dsh105.holoapi.api.AnimatedHologram;
 import com.dsh105.holoapi.api.Hologram;
 import com.dsh105.holoapi.api.MultiColourFormat;
 import com.dsh105.holoapi.api.events.HoloLineUpdateEvent;
+import org.bukkit.Location;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerChangedWorldEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.event.world.ChunkLoadEvent;
 import org.bukkit.event.world.ChunkUnloadEvent;
 import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.util.NumberConversions;
+import org.bukkit.util.Vector;
 
 public class HoloListener implements Listener {
 
@@ -59,6 +64,37 @@ public class HoloListener implements Listener {
         }
     }
 
+    @EventHandler(priority = EventPriority.LOWEST)
+    public void onPlayerMove(PlayerMoveEvent event) {
+        if(event.isCancelled()) return;
+        Location from = event.getFrom();
+        Location to = event.getTo();
+        if (from.getBlockX() == to.getBlockX() &&
+            from.getBlockY() == to.getBlockY() &&
+            from.getBlockZ() == to.getBlockZ()) {
+            return;
+        }
+        Player player = event.getPlayer();
+        String worldName = to.getWorld().getName();
+        for (Hologram h : HoloAPI.getManager().getAllHolograms().keySet()) {
+            if (worldName.equals(h.getWorldName())) {
+                if (h.isWithinRadius(player)) {
+                    // Lets check that we're not sending the same location to the player...
+                    Vector l = h.getLocationFor(player);
+                    int x = NumberConversions.floor(h.getDefaultX());
+                    int y = NumberConversions.floor(h.getDefaultY());
+                    int z = NumberConversions.floor(h.getDefaultZ());
+                    if(l != null && l.getBlockX() == x && l.getBlockY() == y && l.getBlockZ() == z) {
+                        return;
+                    }
+                    h.show(player, true);
+                } else {
+                    h.clear(player);
+                }
+            }
+        }
+    }
+
     @EventHandler
     public void onPlayerQuit(PlayerQuitEvent event) {
         Player player = event.getPlayer();
@@ -73,7 +109,8 @@ public class HoloListener implements Listener {
     public void onPlayerJoin(PlayerJoinEvent event) {
         final Player player = event.getPlayer();
         for (final Hologram h : HoloAPI.getManager().getAllHolograms().keySet()) {
-            if (player.getLocation().getWorld().getName().equals(h.getWorldName()) && h.getVisibility().isVisibleTo(player, h.getSaveId())) {
+            if (player.getLocation().getWorld().getName().equals(h.getWorldName()) &&
+                h.getVisibility().isVisibleTo(player, h.getSaveId())) {
                 new BukkitRunnable() {
                     @Override
                     public void run() {
@@ -91,7 +128,8 @@ public class HoloListener implements Listener {
     public void onWorldChange(PlayerChangedWorldEvent event) {
         final Player player = event.getPlayer();
         for (final Hologram h : HoloAPI.getManager().getAllHolograms().keySet()) {
-            if (player.getLocation().getWorld().getName().equals(h.getWorldName()) && h.getVisibility().isVisibleTo(player, h.getSaveId())) {
+            if (player.getLocation().getWorld().getName().equals(h.getWorldName()) &&
+                h.getVisibility().isVisibleTo(player, h.getSaveId())) {
                 if (h instanceof AnimatedHologram && !((AnimatedHologram) h).isAnimating()) {
                     ((AnimatedHologram) h).animate();
                 }
