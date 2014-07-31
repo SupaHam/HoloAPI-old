@@ -36,7 +36,6 @@ import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.event.world.ChunkLoadEvent;
 import org.bukkit.event.world.ChunkUnloadEvent;
 import org.bukkit.scheduler.BukkitRunnable;
-import org.bukkit.util.NumberConversions;
 import org.bukkit.util.Vector;
 
 public class HoloListener implements Listener {
@@ -78,16 +77,18 @@ public class HoloListener implements Listener {
         String worldName = to.getWorld().getName();
         for (Hologram h : HoloAPI.getManager().getAllHolograms().keySet()) {
             if (worldName.equals(h.getWorldName())) {
+                Vector l = h.getLocationFor(player);
                 if (h.isWithinRadius(player)) {
-                    // Lets check that we're not sending the same location to the player...
-                    Vector l = h.getLocationFor(player);
-                    int x = NumberConversions.floor(h.getDefaultX());
-                    int y = NumberConversions.floor(h.getDefaultY());
-                    int z = NumberConversions.floor(h.getDefaultZ());
-                    if(l != null && l.getBlockX() == x && l.getBlockY() == y && l.getBlockZ() == z) {
-                        return;
+                    if(l == null) {
+                        // Lets check that we're not sending the same location to the player...
+//                        int x = NumberConversions.floor(h.getDefaultX());
+//                        int y = NumberConversions.floor(h.getDefaultY());
+//                        int z = NumberConversions.floor(h.getDefaultZ());
+//                        if (l != null && l.getBlockX() == x && l.getBlockY() == y && l.getBlockZ() == z) {
+//                            return;
+//                        }
+                        h.show(player, true);
                     }
-                    h.show(player, true);
                 } else {
                     h.clear(player);
                 }
