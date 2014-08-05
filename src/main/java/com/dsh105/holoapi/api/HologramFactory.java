@@ -237,7 +237,7 @@ public class HologramFactory {
      *                                                                    initialised
      */
     public Hologram build() {
-        return build(false);
+        return build(true);
     }
 
     /**
