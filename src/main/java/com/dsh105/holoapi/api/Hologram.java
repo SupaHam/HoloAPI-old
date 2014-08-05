@@ -17,6 +17,12 @@
 
 package com.dsh105.holoapi.api;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+
 import com.dsh105.holoapi.HoloAPI;
 import com.dsh105.holoapi.api.events.HoloLineUpdateEvent;
 import com.dsh105.holoapi.api.touch.TouchAction;
@@ -28,7 +34,13 @@ import com.dsh105.holoapi.reflection.SafeMethod;
 import com.dsh105.holoapi.reflection.utility.CommonReflection;
 import com.dsh105.holoapi.util.PlayerIdent;
 import com.dsh105.holoapi.util.TagIdGenerator;
-import com.dsh105.holoapi.util.wrapper.*;
+import com.dsh105.holoapi.util.wrapper.WrappedDataWatcher;
+import com.dsh105.holoapi.util.wrapper.WrapperPacketAttachEntity;
+import com.dsh105.holoapi.util.wrapper.WrapperPacketEntityDestroy;
+import com.dsh105.holoapi.util.wrapper.WrapperPacketEntityMetadata;
+import com.dsh105.holoapi.util.wrapper.WrapperPacketEntityTeleport;
+import com.dsh105.holoapi.util.wrapper.WrapperPacketSpawnEntity;
+import com.dsh105.holoapi.util.wrapper.WrapperPacketSpawnEntityLiving;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Entity;
@@ -37,8 +49,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
-
-import java.util.*;
 
 /**
  * Represents an Hologram that consists of either image or text
@@ -735,7 +745,7 @@ public class Hologram {
         }
     }
 
-    protected void move(Player observer, Vector to) {
+    public void move(Player observer, Vector to) {
         Vector loc = to.clone();
         for (int index = 0; index < this.getTagCount(); index++) {
             this.moveTag(observer, index, loc);
