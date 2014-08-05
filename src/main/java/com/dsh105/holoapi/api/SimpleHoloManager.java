@@ -17,9 +17,21 @@
 
 package com.dsh105.holoapi.api;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.logging.Level;
+
 import com.dsh105.holoapi.HoloAPI;
 import com.dsh105.holoapi.HoloAPICore;
-import com.dsh105.holoapi.api.events.*;
+import com.dsh105.holoapi.api.events.HoloCreateEvent;
+import com.dsh105.holoapi.api.events.HoloDataLoadEvent;
+import com.dsh105.holoapi.api.events.HoloDeleteEvent;
+import com.dsh105.holoapi.api.events.HoloTouchActionLoadEvent;
+import com.dsh105.holoapi.api.events.HoloVisibilityLoadEvent;
 import com.dsh105.holoapi.api.touch.TouchAction;
 import com.dsh105.holoapi.api.visibility.Visibility;
 import com.dsh105.holoapi.config.YAMLConfig;
@@ -38,9 +50,6 @@ import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 import org.bukkit.util.Vector;
-
-import java.util.*;
-import java.util.logging.Level;
 
 public class SimpleHoloManager implements HoloManager {
 
@@ -134,8 +143,11 @@ public class SimpleHoloManager implements HoloManager {
 
     @Override
     public void stopTracking(Hologram hologram) {
+        boolean removed = this.holograms.remove(hologram) != null;
+        if(!removed) return;
+        
         hologram.clearAllPlayerViews();
-        this.holograms.remove(hologram);
+
         if (hologram instanceof AnimatedHologram && ((AnimatedHologram) hologram).isAnimating()) {
             ((AnimatedHologram) hologram).cancelAnimation();
         }
