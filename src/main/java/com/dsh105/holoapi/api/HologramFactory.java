@@ -17,6 +17,10 @@
 
 package com.dsh105.holoapi.api;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.logging.Level;
+
 import com.dsh105.holoapi.HoloAPI;
 import com.dsh105.holoapi.HoloAPICore;
 import com.dsh105.holoapi.api.visibility.Visibility;
@@ -31,10 +35,6 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.util.Vector;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.logging.Level;
 
 /**
  * A HologramFactory is responsible for creating an {@link com.dsh105.holoapi.api.Hologram} which can be managed by
@@ -237,6 +237,18 @@ public class HologramFactory {
      *                                                                    initialised
      */
     public Hologram build() {
+        return build(false);
+    }
+
+    /**
+     * Constructs an {@link com.dsh105.holoapi.api.Hologram} based on the settings stored in the factory
+     *
+     * @param track whether to track and show the hologram
+     * @return The constructed Hologram
+     * @throws com.dsh105.holoapi.exceptions.HologramNotPreparedException if the lines are empty or the location is not
+     *                                                                    initialised
+     */
+    public Hologram build(boolean track) {
         if (this.isEmpty()) {
             throw new HologramNotPreparedException("Hologram lines cannot be empty.");
         }
@@ -276,12 +288,14 @@ public class HologramFactory {
                 }
             }
         }*/
-        for (Entity e : hologram.getDefaultLocation().getWorld().getEntities()) {
-            if (e instanceof Player) {
-                hologram.show((Player) e, true);
+        if(track) {
+            for (Entity e : hologram.getDefaultLocation().getWorld().getEntities()) {
+                if (e instanceof Player) {
+                    hologram.show((Player) e, true);
+                }
             }
+            HoloAPI.getManager().track(hologram, this.owningPlugin);
         }
-        HoloAPI.getManager().track(hologram, this.owningPlugin);
         return hologram;
     }
 }
